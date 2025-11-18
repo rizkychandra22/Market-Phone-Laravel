@@ -8,6 +8,12 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+
+// Setup Nav link User Admin dan Pengguna
+import { usePage } from '@inertiajs/vue3';
+const user = usePage().props.auth.user;
+
+const isAdmin = user.role === 'Admin';
 </script>
 
 <template>
@@ -30,7 +36,7 @@ const showingNavigationDropdown = ref(false);
                             </div>
 
                             <!-- Navigation Links -->
-                            <div
+                            <div v-if="isAdmin"
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
@@ -39,6 +45,29 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    :href="route('dashboard')"
+                                    :active="route().current('dashboard')"
+                                >
+                                    Product
+                                </NavLink>
+                                <NavLink
+                                    :href="route('dashboard')"
+                                    :active="route().current('dashboard')"
+                                >
+                                    Market
+                                </NavLink>
+                            </div>
+                            <div v-else
+                                class="hidden sm:flex sm:ms-10 space-x-8 sm:-my-px"
+                            >
+                                <NavLink 
+                                    :href="route('dashboard')" 
+                                    :active="route().current('dashboard')"
+                                >
+                                    Dashboard
+                                </NavLink>
+
                             </div>
                         </div>
 
