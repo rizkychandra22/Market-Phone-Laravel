@@ -67,7 +67,6 @@ const isAdmin = user.role === 'Admin';
                                 >
                                     Dashboard
                                 </NavLink>
-
                             </div>
                         </div>
 
