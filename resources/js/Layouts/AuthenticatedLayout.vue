@@ -13,7 +13,9 @@ const showingNavigationDropdown = ref(false);
 import { usePage } from '@inertiajs/vue3';
 const user = usePage().props.auth.user;
 
-const isAdmin = user.role === 'Admin';
+const super_admin = user.role === 'Super Admin';
+const seller = user.role === 'Seller';
+const customer = user.role === 'Customer';
 </script>
 
 <template>
@@ -36,7 +38,29 @@ const isAdmin = user.role === 'Admin';
                             </div>
 
                             <!-- Navigation Links -->
-                            <div v-if="isAdmin"
+                            <div v-if="admin"
+                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
+                            >
+                                <NavLink
+                                    :href="route('dashboard')"
+                                    :active="route().current('dashboard')"
+                                >
+                                    Dashboard
+                                </NavLink>
+                                <NavLink
+                                    :href="route('dashboard')"
+                                    :active="route().current('dashboard')"
+                                >
+                                    User Seller
+                                </NavLink>
+                                <NavLink
+                                    :href="route('dashboard')"
+                                    :active="route().current('dashboard')"
+                                >
+                                    User Customer
+                                </NavLink>
+                            </div>
+                            <div v-else-if="seller"
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
@@ -58,7 +82,7 @@ const isAdmin = user.role === 'Admin';
                                     Market
                                 </NavLink>
                             </div>
-                            <div v-else
+                            <div v-else="customer"
                                 class="hidden sm:flex sm:ms-10 space-x-8 sm:-my-px"
                             >
                                 <NavLink 
