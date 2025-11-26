@@ -38,7 +38,7 @@ const customer = user.role === 'Customer';
                             </div>
 
                             <!-- Navigation Links -->
-                            <div v-if="admin"
+                            <div v-if="super_admin"
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
@@ -82,7 +82,7 @@ const customer = user.role === 'Customer';
                                     Market
                                 </NavLink>
                             </div>
-                            <div v-else="customer"
+                            <div v-else
                                 class="hidden sm:flex sm:ms-10 space-x-8 sm:-my-px"
                             >
                                 <NavLink 
