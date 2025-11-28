@@ -14,9 +14,9 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'Xender',
+            'name' => 'Super Admin',
             'username' => 'superadmin',
-            'role' => 'Super Admin',
+            // 'role' => 'Super Admin',
             'phone' => '08951662773',
             'address' => 'Sukabumi',
             'email' => 'super123@gmail.com',
@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Fadhillah Dinurahman',
             'username' => 'fadhillahdnrr',
-            'role' => 'Seller',
+            // 'role' => 'Seller',
             'phone' => '087786799710',
             'address' => 'Cisaat, Sukabumi',
             'email' => 'haiyamhaha02@gmail.com',
@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Rizky Chandra',
             'username' => 'chndr',
-            'role' => 'Customer',
+            // 'role' => 'Customer',
             'phone' => '085766442233',
             'address' => 'Man 2 Sukabumi',
             'email' => 'chandra224@gmail.com',

@@ -33,8 +33,12 @@ const submit = () => {
     <GuestLayout>
         <Head title="Log in" />
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+        <!-- <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
+        </div> -->
+
+        <div v-if="$page.props.flash.error" class="text-red-600 mb-2">
+            {{ $page.props.flash.error }}
         </div>
 
         <form @submit.prevent="submit">

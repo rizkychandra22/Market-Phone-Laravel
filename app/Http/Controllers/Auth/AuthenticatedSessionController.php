@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,13 +28,21 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        if (Auth::user()->role === 'Super Admin') {
+            return redirect()->route('root.dashboard');
+        } elseif (Auth::user()->role === 'Seller') {
+            return redirect()->route('seller.dashboard');
+        } elseif (Auth::user()->role === 'Customer') {
+            return redirect()->route('customer.dashboard');
+        }
+
+        return redirect()->to('/');
     }
 
     /**
@@ -49,4 +58,10 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/');
+    }  
 }

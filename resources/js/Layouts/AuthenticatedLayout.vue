@@ -9,13 +9,17 @@ import { Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
 
-// Setup Nav link User Admin dan Pengguna
+// Setup Nav link User 
 import { usePage } from '@inertiajs/vue3';
-const user = usePage().props.auth.user;
+const page = usePage();
+const user = page.props.auth?.user ?? {};
 
-const super_admin = user.role === 'Super Admin';
-const seller = user.role === 'Seller';
-const customer = user.role === 'Customer';
+// Roles (selalu array lalu cek dengan aman)
+const roles = user?.roles ?? [];
+
+const isSuperAdmin = roles.includes("Super Admin");
+const isSeller = roles.includes("Seller");
+const isCustomer = roles.includes("Customer");
 </script>
 
 <template>
@@ -29,8 +33,25 @@ const customer = user.role === 'Customer';
                     <div class="flex h-16 justify-between">
                         <div class="flex">
                             <!-- Logo -->
-                            <div class="flex shrink-0 items-center">
-                                <Link :href="route('dashboard')">
+                            <div v-if="isSeller"
+                                class="flex shrink-0 items-center">
+                                <Link :href="route('seller.dashboard')">
+                                    <ApplicationLogo
+                                        class="block h-9 w-auto fill-current text-gray-800"
+                                    />
+                                </Link>
+                            </div>
+                            <div v-else-if="isCustomer" 
+                                class="flex shrink-0 items-center">
+                                <Link :href="route('root.dashboard')">
+                                    <ApplicationLogo
+                                        class="block h-9 w-auto fill-current text-gray-800"
+                                    />
+                                </Link>
+                            </div>
+                            <div v-else 
+                                class="flex shrink-0 items-center">
+                                <Link :href="route('root.dashboard')">
                                     <ApplicationLogo
                                         class="block h-9 w-auto fill-current text-gray-800"
                                     />
@@ -38,58 +59,64 @@ const customer = user.role === 'Customer';
                             </div>
 
                             <!-- Navigation Links -->
-                            <div v-if="super_admin"
+                             <div v-if="isSeller"
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                                    :href="route('seller.dashboard')"
+                                    :active="route().current('seller.dashboard')"
                                 >
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    User Seller
-                                </NavLink>
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    User Customer
-                                </NavLink>
-                            </div>
-                            <div v-else-if="seller"
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
-                                >
-                                    Dashboard
-                                </NavLink>
-                                <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                                    :href="route('seller.dashboard')"
+                                    :active="route().current('seller.dashboard')"
                                 >
                                     Product
                                 </NavLink>
                                 <NavLink
-                                    :href="route('dashboard')"
-                                    :active="route().current('dashboard')"
+                                    :href="route('seller.dashboard')"
+                                    :active="route().current('seller.dashboard')"
                                 >
                                     Market
                                 </NavLink>
                             </div>
-                            <div v-else
+                            <div v-else-if="isCustomer"
                                 class="hidden sm:flex sm:ms-10 space-x-8 sm:-my-px"
                             >
                                 <NavLink 
-                                    :href="route('dashboard')" 
-                                    :active="route().current('dashboard')"
+                                    :href="route('customer.dashboard')" 
+                                    :active="route().current('customer.dashboard')"
                                 >
                                     Dashboard
+                                </NavLink>
+                                <NavLink 
+                                    :href="route('customer.dashboard')" 
+                                    :active="route().current('customer.dashboard')"
+                                >
+                                    Pesanan
+                                </NavLink>
+                            </div>
+                            <div v-else
+                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
+                            >
+                                <NavLink
+                                    :href="route('root.dashboard')"
+                                    :active="route().current('root.dashboard')"
+                                >
+                                    Dashboard
+                                </NavLink>
+                                <NavLink
+                                    :href="route('root.dashboard')"
+                                    :active="route().current('root.dashboard')"
+                                >
+                                    User Seller
+                                </NavLink>
+                                <NavLink
+                                    :href="route('root.dashboard')"
+                                    :active="route().current('root.dashboard')"
+                                >
+                                    User Customer
                                 </NavLink>
                             </div>
                         </div>
@@ -104,8 +131,7 @@ const customer = user.role === 'Customer';
                                                 type="button"
                                                 class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
-                                                ({{ $page.props.auth.user.role }})
-                                                {{ $page.props.auth.user.name }}
+                                                ({{ roles.join(', ') }}) &mdash; {{ user.name }}
 
                                                 <svg
                                                     class="-me-0.5 ms-2 h-4 w-4"
@@ -193,13 +219,25 @@ const customer = user.role === 'Customer';
                     class="sm:hidden"
                 >
                     <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            :href="route('dashboard')"
-                            :active="route().current('dashboard')"
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
                     </div>
+                    <ResponsiveNavLink v-if="isSeller"
+                        :href="route('seller.dashboard')"
+                        :active="route().current('seller.dashboard')"
+                    >
+                        Dashboard
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink v-else-if="isCustomer"
+                        :href="route('customer.dashboard')"
+                        :active="route().current('customer.dashboard')"
+                    >
+                        Dashboard
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink v-else
+                        :href="route('root.dashboard')"
+                        :active="route().current('root.dashboard')"
+                    >
+                        Dashboard
+                    </ResponsiveNavLink>
 
                     <!-- Responsive Settings Options -->
                     <div
@@ -209,10 +247,10 @@ const customer = user.role === 'Customer';
                             <div
                                 class="text-base font-medium text-gray-800"
                             >
-                                {{ $page.props.auth.user.name }}
+                                ({{ roles.join(', ') }}) &mdash; {{ user.name }}
                             </div>
                             <div class="text-sm font-medium text-gray-500">
-                                {{ $page.props.auth.user.email }}
+                                {{ user.email }}
                             </div>
                         </div>
 

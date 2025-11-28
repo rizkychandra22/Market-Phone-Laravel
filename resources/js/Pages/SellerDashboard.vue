@@ -1,6 +1,9 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const user = page.props.auth?.user ?? null;
 </script>
 
 <template>
@@ -21,7 +24,8 @@ import { Head } from '@inertiajs/vue3';
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
                 >
                     <div class="p-6 text-gray-900">
-                        You're logged in!
+                        Selamat datang, {{ user?.name ?? 'User' }}! <br>
+                        Anda berada di dashboard Seller.
                     </div>
                 </div>
             </div>
