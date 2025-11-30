@@ -24,16 +24,15 @@ onMounted(() => {
             { 
                 data: null,
                 title: 'No',
-                className: 'text-center',
                 render: function (data, type, row, meta) {
                     return meta.row + 1;
                 }
             },
-            { data: 'name', title: 'Nama',className: 'text-center', },
-            { data: 'username', title: 'Username', className: 'text-center', },
-            { data: 'email', title: 'Email', className: 'text-center', },
-            { data: 'phone', title: 'Phone', className: 'text-center', },
-            { data: 'address', title: 'Address', className: 'text-center', },
+            { data: 'name', title: 'Nama' },
+            { data: 'username', title: 'Username', },
+            { data: 'email', title: 'Email', },
+            { data: 'phone', title: 'Telpon', },
+            { data: 'address', title: 'Address', },
             { 
                 data: 'created_at',
                 title: 'Terdaftar',

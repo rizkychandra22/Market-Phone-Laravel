@@ -5,6 +5,8 @@ use App\Http\Controllers\Root\DashboardController as DashboardSuperAdmin;
 use App\Http\Controllers\Seller\DashboardController as DashboardSeller;
 use App\Http\Controllers\Customer\DashboardController as DashboardCustomer;
 use App\Http\Controllers\Root\UserController;
+use App\Http\Controllers\Seller\MarketController;
+use App\Http\Controllers\Seller\ProductController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -45,6 +47,8 @@ Route::middleware(['role.redirect:Super Admin'])
 Route::middleware(['role.redirect:Seller'])
     ->prefix('dashboard')->name('seller.')->group(function () {
         Route::get('/seller', [DashboardSeller::class, 'index'])->name('dashboard');
+        Route::get('/seller/products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('/seller/market', [MarketController::class, 'index'])->name('market.index');
     });
 
 // Rute Customer

@@ -70,14 +70,14 @@ const isCustomer = roles.includes("Customer");
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    :href="route('seller.dashboard')"
-                                    :active="route().current('seller.dashboard')"
+                                    :href="route('seller.products.index')"
+                                    :active="route().current('seller.products.index')"
                                 >
                                     Product
                                 </NavLink>
                                 <NavLink
-                                    :href="route('seller.dashboard')"
-                                    :active="route().current('seller.dashboard')"
+                                    :href="route('seller.market.index')"
+                                    :active="route().current('seller.market.index')"
                                 >
                                     Market
                                 </NavLink>
@@ -136,7 +136,7 @@ const isCustomer = roles.includes("Customer");
                                                 type="button"
                                                 class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
-                                                ({{ roles.join(', ') }}) &mdash; {{ user.name }}
+                                                {{ user.name }} &mdash; ({{ roles.join(', ') }})
 
                                                 <svg
                                                     class="-me-0.5 ms-2 h-4 w-4"
@@ -227,40 +227,64 @@ const isCustomer = roles.includes("Customer");
                     </div>
 
                     <!-- Navlink mobile user seller -->
-                    <ResponsiveNavLink v-if="isSeller"
-                        :href="route('seller.dashboard')"
-                        :active="route().current('seller.dashboard')"
-                    >
-                        Dashboard
-                    </ResponsiveNavLink>
+                     <div v-if="isSeller">
+                        <ResponsiveNavLink
+                            :href="route('seller.dashboard')"
+                            :active="route().current('seller.dashboard')"
+                        >
+                            Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('seller.products.index')"
+                            :active="route().current('seller.products.index')"
+                        >
+                            Product
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('seller.market.index')"
+                            :active="route().current('seller.market.index')"
+                        >
+                            Market
+                        </ResponsiveNavLink>
+                     </div>
 
                     <!-- Navlink mobile user customer -->
-                    <ResponsiveNavLink v-else-if="isCustomer"
-                        :href="route('customer.dashboard')"
-                        :active="route().current('customer.dashboard')"
-                    >
-                        Dashboard
-                    </ResponsiveNavLink>
+                     <div v-else-if="isCustomer">
+                        <ResponsiveNavLink
+                            :href="route('customer.dashboard')"
+                            :active="route().current('customer.dashboard')"
+                        >
+                            Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('customer.dashboard')"
+                            :active="route().current('customer.dashboard')"
+                        >
+                            Pesanan
+                        </ResponsiveNavLink>
+                     </div>
 
                     <!-- Navlink mobile user super admin -->
-                    <ResponsiveNavLink v-else
-                        :href="route('root.dashboard')"
-                        :active="route().current('root.dashboard')"
-                    >
-                        Dashboard
-                    </ResponsiveNavLink>
-                    <ResponsiveNavLink
-                        :href="route('root.users.sellers')"
-                        :active="route().current('root.users.sellers')"
-                    >
-                        User Seller
-                    </ResponsiveNavLink>
-                    <ResponsiveNavLink
-                        :href="route('root.users.customers')"
-                        :active="route().current('root.users.customers')"
-                    >
-                        User Customer
-                    </ResponsiveNavLink>
+                     <div v-else>
+                        <ResponsiveNavLink
+                            :href="route('root.dashboard')"
+                            :active="route().current('root.dashboard')"
+                        >
+                            Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('root.users.sellers')"
+                            :active="route().current('root.users.sellers')"
+                        >
+                            User Seller
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('root.users.customers')"
+                            :active="route().current('root.users.customers')"
+                        >
+                            User Customer
+                        </ResponsiveNavLink>
+                     </div>
                     <br>
 
                     <!-- Responsive Settings Options -->
@@ -271,7 +295,7 @@ const isCustomer = roles.includes("Customer");
                             <div
                                 class="text-base font-medium text-gray-800"
                             >
-                                ({{ roles.join(', ') }}) &mdash; {{ user.name }}
+                                {{ user.name }} &mdash; ({{ roles.join(', ') }})
                             </div>
                             <div class="text-sm font-medium text-gray-500">
                                 {{ user.email }}
