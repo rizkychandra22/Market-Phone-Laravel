@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* child-row lebih rapih */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before {
+    top: 14px;
+    left: 14px;
+}
+
+/* layout child row */
+table.dataTable tbody tr.child ul.dtr-details {
+    width: 100%;
+    padding-left: 0;
+}
+
+table.dataTable tbody tr.child ul.dtr-details > li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
+}
+
+table.dataTable tbody tr.child ul.dtr-details > li:last-child {
+    border-bottom: none;
+}
+
+/* label dan value */
+table.dataTable tbody tr.child .dtr-title {
+    font-weight: 600;
+    width: 30%;
+}
+
+table.dataTable tbody tr.child .dtr-data {
+    text-align: start;
+    width: 70%;
+    white-space: normal !important; /* Biar text panjang turun rapih */
+    word-break: break-word;
+}

@@ -78,7 +78,9 @@ onBeforeUnmount(() => {
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="bg-white p-6 shadow-sm sm:rounded-lg">
-                    <table id="users-table-customer" class="stripe hover row-border w-full text-sm text-left whitespace-nowrap"></table>
+                    <div class="overflow-x-auto">
+                        <table id="users-table-customer" class="stripe hover row-border w-full text-sm !important"></table>
+                    </div>
                 </div>
             </div>
         </div>
