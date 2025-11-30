@@ -1,0 +1,87 @@
+<script setup>
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { onMounted, onBeforeUnmount } from 'vue';
+import { Head } from '@inertiajs/vue3';
+
+import $ from 'jquery';
+import 'datatables.net-dt';
+import 'datatables.net-responsive';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
+import 'datatables.net-responsive-dt/css/responsive.dataTables.css';
+
+let table = null;
+
+onMounted(() => {
+    table = $('#users-table-customer').DataTable({
+        ajax: {
+            url: '/dashboard/users/customers/data',
+            dataSrc: 'data',
+            error: function (xhr) {
+                console.error('AJAX ERROR:', xhr.status, xhr.responseText);
+            }
+        },
+        columns: [
+            { 
+                data: null,
+                title: 'No',
+                className: 'text-center',
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            { data: 'name', title: 'Nama',className: 'text-center', },
+            { data: 'username', title: 'Username', className: 'text-center', },
+            { data: 'email', title: 'Email', className: 'text-center', },
+            { data: 'phone', title: 'Phone', className: 'text-center', },
+            { data: 'address', title: 'Address', className: 'text-center', },
+            { 
+                data: 'created_at',
+                title: 'Terdaftar',
+                render: function (data) {
+                    if (!data) return '-';
+                    const d = new Date(data);
+                    return d.toLocaleString();
+                }
+            }
+        ],
+        pageLength: 10,
+        processing: true,
+        responsive: true,
+        language: {
+            search: "Cari:",
+            lengthMenu: "Tampilkan _MENU_ data",
+            zeroRecords: "Tidak ada data ditemukan",
+            info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+            infoEmpty: "Tidak ada data tersedia",
+            loadingRecords: "Memuat...",
+        }
+    });
+});
+
+onBeforeUnmount(() => {
+    if (table) {
+        table.destroy(true);
+        table = null;
+    }
+});
+</script>
+
+<template>
+    <Head title="Data Seller" />
+
+    <AuthenticatedLayout>
+        <template #header>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                Data User Customer
+            </h2>
+        </template>
+
+        <div class="py-12">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div class="bg-white p-6 shadow-sm sm:rounded-lg">
+                    <table id="users-table-customer" class="stripe hover row-border w-full text-sm text-left whitespace-nowrap"></table>
+                </div>
+            </div>
+        </div>
+    </AuthenticatedLayout>
+</template>

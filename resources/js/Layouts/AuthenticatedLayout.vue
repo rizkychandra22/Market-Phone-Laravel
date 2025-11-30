@@ -59,7 +59,8 @@ const isCustomer = roles.includes("Customer");
                             </div>
 
                             <!-- Navigation Links -->
-                             <div v-if="isSeller"
+                            <!-- Navlink dekstop user seller -->
+                            <div v-if="isSeller"
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
                                 <NavLink
@@ -81,6 +82,8 @@ const isCustomer = roles.includes("Customer");
                                     Market
                                 </NavLink>
                             </div>
+
+                            <!-- Navlink dekstop user customer -->
                             <div v-else-if="isCustomer"
                                 class="hidden sm:flex sm:ms-10 space-x-8 sm:-my-px"
                             >
@@ -97,6 +100,8 @@ const isCustomer = roles.includes("Customer");
                                     Pesanan
                                 </NavLink>
                             </div>
+
+                            <!-- Navlink dekstop user super admin -->
                             <div v-else
                                 class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
                             >
@@ -107,14 +112,14 @@ const isCustomer = roles.includes("Customer");
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    :href="route('root.dashboard')"
-                                    :active="route().current('root.dashboard')"
+                                    :href="route('root.users.sellers')"
+                                    :active="route().current('root.users.sellers')"
                                 >
                                     User Seller
                                 </NavLink>
                                 <NavLink
-                                    :href="route('root.dashboard')"
-                                    :active="route().current('root.dashboard')"
+                                    :href="route('root.users.customers')"
+                                    :active="route().current('root.users.customers')"
                                 >
                                     User Customer
                                 </NavLink>
@@ -220,24 +225,43 @@ const isCustomer = roles.includes("Customer");
                 >
                     <div class="space-y-1 pb-3 pt-2">
                     </div>
+
+                    <!-- Navlink mobile user seller -->
                     <ResponsiveNavLink v-if="isSeller"
                         :href="route('seller.dashboard')"
                         :active="route().current('seller.dashboard')"
                     >
                         Dashboard
                     </ResponsiveNavLink>
+
+                    <!-- Navlink mobile user customer -->
                     <ResponsiveNavLink v-else-if="isCustomer"
                         :href="route('customer.dashboard')"
                         :active="route().current('customer.dashboard')"
                     >
                         Dashboard
                     </ResponsiveNavLink>
+
+                    <!-- Navlink mobile user super admin -->
                     <ResponsiveNavLink v-else
                         :href="route('root.dashboard')"
                         :active="route().current('root.dashboard')"
                     >
                         Dashboard
                     </ResponsiveNavLink>
+                    <ResponsiveNavLink
+                        :href="route('root.users.sellers')"
+                        :active="route().current('root.users.sellers')"
+                    >
+                        User Seller
+                    </ResponsiveNavLink>
+                    <ResponsiveNavLink
+                        :href="route('root.users.customers')"
+                        :active="route().current('root.users.customers')"
+                    >
+                        User Customer
+                    </ResponsiveNavLink>
+                    <br>
 
                     <!-- Responsive Settings Options -->
                     <div

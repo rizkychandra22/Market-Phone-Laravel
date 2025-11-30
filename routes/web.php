@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Root\DashboardController as DashboardSuperAdmin;
 use App\Http\Controllers\Seller\DashboardController as DashboardSeller;
 use App\Http\Controllers\Customer\DashboardController as DashboardCustomer;
+use App\Http\Controllers\Root\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -32,26 +33,24 @@ Route::get('/', function () {
 
 // Rute Super Admin
 Route::middleware(['role.redirect:Super Admin'])
-    ->prefix('root')
-    ->name('root.')
-    ->group(function () {
-        Route::get('/dashboard', [DashboardSuperAdmin::class, 'index'])->name('dashboard');
+    ->prefix('dashboard')->name('root.')->group(function () {
+        Route::get('/root', [DashboardSuperAdmin::class, 'index'])->name('dashboard');
+        Route::get('/users/sellers', [UserController::class, 'indexSeller'])->name('users.sellers');
+        Route::get('/users/sellers/data', [UserController::class, 'dataSeller'])->name('users.sellers.data');
+        Route::get('/users/customers', [UserController::class, 'indexCustomer'])->name('users.customers');
+        Route::get('/users/customers/data', [UserController::class, 'dataCustomer'])->name('users.customers.data');
     });
 
 // Rute Seller
 Route::middleware(['role.redirect:Seller'])
-    ->prefix('seller')
-    ->name('seller.')
-    ->group(function () {
-        Route::get('/dashboard', [DashboardSeller::class, 'index'])->name('dashboard');
+    ->prefix('dashboard')->name('seller.')->group(function () {
+        Route::get('/seller', [DashboardSeller::class, 'index'])->name('dashboard');
     });
 
 // Rute Customer
 Route::middleware(['role.redirect:Customer'])
-    ->prefix('customer')
-    ->name('customer.')
-    ->group(function () {
-        Route::get('/dashboard', [DashboardCustomer::class, 'index'])->name('dashboard');
+    ->prefix('dashboard')->name('customer.')->group(function () {
+        Route::get('/customer', [DashboardCustomer::class, 'index'])->name('dashboard');
     });
 
 // Profile
