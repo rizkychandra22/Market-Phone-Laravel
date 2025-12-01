@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, usePage } from '@inertiajs/vue3';
+import { Head, usePage, Link } from '@inertiajs/vue3';
 
 const page = usePage();
 const user = page.props.auth?.user ?? null;
@@ -11,18 +11,23 @@ const user = page.props.auth?.user ?? null;
 
     <AuthenticatedLayout>
         <template #header>
-            <h2
-                class="text-xl font-semibold leading-tight text-gray-800"
-            >
-                Data Penjualan
-            </h2>
+            <div class="flex items-center justify-between w-full">
+                <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                    Data Penjualan
+                </h2>
+
+                <Link
+                    :href="route('seller.market.create')"
+                    class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Tambah</span>
+                </Link>
+            </div>
         </template>
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div
-                    class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
-                >
+                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         Selamat datang, {{ user?.name ?? 'User' }}! <br>
                         Anda berada di dashboard Seller.

@@ -14,12 +14,8 @@ class ProductController extends Controller
         return Inertia::render('Seller/Product/Index');
     }
 
-    public function dataProduct(Request $request)
+    public function create()
     {
-        $dataProducts = product::select('name', 'category', 'price', 'stock', 'created_at')
-            ->orderByDesc('created_at')
-            ->get();
-
-        return response()->json(['data' => $dataProducts]);
+        return Inertia::render('Seller/Product/Create');
     }
 }

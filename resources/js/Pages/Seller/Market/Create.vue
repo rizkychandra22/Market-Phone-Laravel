@@ -13,14 +13,14 @@ const user = page.props.auth?.user ?? null;
         <template #header>
             <div class="flex items-center justify-between w-full">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                    Data Produk
+                    Tambah Penjualan
                 </h2>
 
-                <Link 
-                    :href="route('seller.products.create')" 
+                <Link
+                    :href="route('seller.market.index')"
                     class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Tambah</span>
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Kembali</span>
                 </Link>
             </div>
         </template>

@@ -5,16 +5,15 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { usePage, Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
 
 // Setup Nav link User 
-import { usePage } from '@inertiajs/vue3';
 const page = usePage();
 const user = page.props.auth?.user ?? {};
 
-// Roles (selalu array lalu cek dengan aman)
+// Roles yang dimiliki user setelah login
 const roles = user?.roles ?? [];
 
 const isSuperAdmin = roles.includes("Super Admin");
@@ -25,9 +24,7 @@ const isCustomer = roles.includes("Customer");
 <template>
     <div>
         <div class="min-h-screen bg-gray-100">
-            <nav
-                class="border-b border-gray-100 bg-white"
-            >
+            <nav class="border-b border-gray-100 bg-white">
                 <!-- Primary Navigation Menu -->
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex h-16 justify-between">
@@ -36,91 +33,74 @@ const isCustomer = roles.includes("Customer");
                             <div v-if="isSeller"
                                 class="flex shrink-0 items-center">
                                 <Link :href="route('seller.dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
+                                    <ApplicationLogo class="block h-9 w-auto fill-current text-gray-800"/>
                                 </Link>
                             </div>
                             <div v-else-if="isCustomer" 
                                 class="flex shrink-0 items-center">
                                 <Link :href="route('root.dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
+                                    <ApplicationLogo class="block h-9 w-auto fill-current text-gray-800"/>
                                 </Link>
                             </div>
                             <div v-else 
                                 class="flex shrink-0 items-center">
                                 <Link :href="route('root.dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800"
-                                    />
+                                    <ApplicationLogo class="block h-9 w-auto fill-current text-gray-800"/>
                                 </Link>
                             </div>
 
                             <!-- Navigation Links -->
                             <!-- Navlink dekstop user seller -->
                             <div v-if="isSeller"
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
+                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     :href="route('seller.dashboard')"
-                                    :active="route().current('seller.dashboard')"
-                                >
+                                    :active="route().current('seller.dashboard')">
                                     Dashboard
                                 </NavLink>
                                 <NavLink
                                     :href="route('seller.products.index')"
-                                    :active="route().current('seller.products.index')"
-                                >
+                                    :active="route().current().startsWith('seller.products.')">
                                     Product
                                 </NavLink>
                                 <NavLink
                                     :href="route('seller.market.index')"
-                                    :active="route().current('seller.market.index')"
-                                >
+                                    :active="route().current().startsWith('seller.market.')">
                                     Market
                                 </NavLink>
                             </div>
 
                             <!-- Navlink dekstop user customer -->
                             <div v-else-if="isCustomer"
-                                class="hidden sm:flex sm:ms-10 space-x-8 sm:-my-px"
-                            >
+                                class="hidden sm:flex sm:ms-10 space-x-8 sm:-my-px">
                                 <NavLink 
                                     :href="route('customer.dashboard')" 
-                                    :active="route().current('customer.dashboard')"
-                                >
+                                    :active="route().current('customer.dashboard')">
                                     Dashboard
                                 </NavLink>
                                 <NavLink 
                                     :href="route('customer.dashboard')" 
-                                    :active="route().current('customer.dashboard')"
-                                >
+                                    :active="route().current('customer.dashboard')">
                                     Pesanan
                                 </NavLink>
                             </div>
 
                             <!-- Navlink dekstop user super admin -->
                             <div v-else
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
+                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     :href="route('root.dashboard')"
-                                    :active="route().current('root.dashboard')"
-                                >
+                                    :active="route().current('root.dashboard')">
                                     Dashboard
                                 </NavLink>
                                 <NavLink
                                     :href="route('root.users.sellers')"
-                                    :active="route().current('root.users.sellers')"
-                                >
+                                    :active="route().current('root.users.sellers')">
                                     User Seller
                                 </NavLink>
                                 <NavLink
                                     :href="route('root.users.customers')"
-                                    :active="route().current('root.users.customers')"
-                                >
+                                    :active="route().current('root.users.customers')">
                                     User Customer
                                 </NavLink>
                             </div>
@@ -134,21 +114,18 @@ const isCustomer = roles.includes("Customer");
                                         <span class="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                            >
+                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
                                                 {{ user.name }} &mdash; ({{ roles.join(', ') }})
 
                                                 <svg
                                                     class="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
+                                                    fill="currentColor">
                                                     <path
                                                         fill-rule="evenodd"
                                                         d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clip-rule="evenodd"
-                                                    />
+                                                        clip-rule="evenodd"/>
                                                 </svg>
                                             </button>
                                         </span>
@@ -156,15 +133,13 @@ const isCustomer = roles.includes("Customer");
 
                                     <template #content>
                                         <DropdownLink
-                                            :href="route('profile.edit')"
-                                        >
+                                            :href="route('profile.edit')">
                                             Profile
                                         </DropdownLink>
                                         <DropdownLink
                                             :href="route('logout')"
                                             method="post"
-                                            as="button"
-                                        >
+                                            as="button">
                                             Log Out
                                         </DropdownLink>
                                     </template>
@@ -179,14 +154,12 @@ const isCustomer = roles.includes("Customer");
                                     showingNavigationDropdown =
                                         !showingNavigationDropdown
                                 "
-                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                            >
+                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none">
                                 <svg
                                     class="h-6 w-6"
                                     stroke="currentColor"
                                     fill="none"
-                                    viewBox="0 0 24 24"
-                                >
+                                    viewBox="0 0 24 24">
                                     <path
                                         :class="{
                                             hidden: showingNavigationDropdown,
@@ -221,8 +194,7 @@ const isCustomer = roles.includes("Customer");
                         block: showingNavigationDropdown,
                         hidden: !showingNavigationDropdown,
                     }"
-                    class="sm:hidden"
-                >
+                    class="sm:hidden">
                     <div class="space-y-1 pb-3 pt-2">
                     </div>
 
@@ -230,20 +202,17 @@ const isCustomer = roles.includes("Customer");
                      <div v-if="isSeller">
                         <ResponsiveNavLink
                             :href="route('seller.dashboard')"
-                            :active="route().current('seller.dashboard')"
-                        >
+                            :active="route().current('seller.dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             :href="route('seller.products.index')"
-                            :active="route().current('seller.products.index')"
-                        >
+                            :active="route().current('seller.products.index') || route().current('seller.products.create')">
                             Product
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             :href="route('seller.market.index')"
-                            :active="route().current('seller.market.index')"
-                        >
+                            :active="route().current('seller.market.index') || route().current('seller.market.create')">
                             Market
                         </ResponsiveNavLink>
                      </div>
@@ -252,14 +221,12 @@ const isCustomer = roles.includes("Customer");
                      <div v-else-if="isCustomer">
                         <ResponsiveNavLink
                             :href="route('customer.dashboard')"
-                            :active="route().current('customer.dashboard')"
-                        >
+                            :active="route().current('customer.dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             :href="route('customer.dashboard')"
-                            :active="route().current('customer.dashboard')"
-                        >
+                            :active="route().current('customer.dashboard')">
                             Pesanan
                         </ResponsiveNavLink>
                      </div>
@@ -268,20 +235,17 @@ const isCustomer = roles.includes("Customer");
                      <div v-else>
                         <ResponsiveNavLink
                             :href="route('root.dashboard')"
-                            :active="route().current('root.dashboard')"
-                        >
+                            :active="route().current('root.dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             :href="route('root.users.sellers')"
-                            :active="route().current('root.users.sellers')"
-                        >
+                            :active="route().current('root.users.sellers')">
                             User Seller
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             :href="route('root.users.customers')"
-                            :active="route().current('root.users.customers')"
-                        >
+                            :active="route().current('root.users.customers')">
                             User Customer
                         </ResponsiveNavLink>
                      </div>
@@ -289,12 +253,10 @@ const isCustomer = roles.includes("Customer");
 
                     <!-- Responsive Settings Options -->
                     <div
-                        class="border-t border-gray-200 pb-1 pt-4"
-                    >
+                        class="border-t border-gray-200 pb-1 pt-4">
                         <div class="px-4">
                             <div
-                                class="text-base font-medium text-gray-800"
-                            >
+                                class="text-base font-medium text-gray-800"    >
                                 {{ user.name }} &mdash; ({{ roles.join(', ') }})
                             </div>
                             <div class="text-sm font-medium text-gray-500">
@@ -309,8 +271,7 @@ const isCustomer = roles.includes("Customer");
                             <ResponsiveNavLink
                                 :href="route('logout')"
                                 method="post"
-                                as="button"
-                            >
+                                as="button">
                                 Log Out
                             </ResponsiveNavLink>
                         </div>

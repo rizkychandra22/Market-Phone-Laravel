@@ -29,7 +29,7 @@ Route::get('/', function () {
         $user->hasRole('Super Admin') => redirect()->route('root.dashboard'),
         $user->hasRole('Seller') => redirect()->route('seller.dashboard'),
         $user->hasRole('Customer') => redirect()->route('customer.dashboard'),
-        default => url('/login'),
+        default => route('login'),
     };
 });
 
@@ -48,7 +48,9 @@ Route::middleware(['role.redirect:Seller'])
     ->prefix('dashboard')->name('seller.')->group(function () {
         Route::get('/seller', [DashboardSeller::class, 'index'])->name('dashboard');
         Route::get('/seller/products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('/seller/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::get('/seller/market', [MarketController::class, 'index'])->name('market.index');
+        Route::get('/seller/market/create', [MarketController::class, 'create'])->name('market.create');
     });
 
 // Rute Customer
@@ -59,9 +61,9 @@ Route::middleware(['role.redirect:Customer'])
 
 // Profile
 Route::middleware('role.redirect:Super Admin,Seller,Customer')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/user/account', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile/user/account', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile/user/account', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__ . '/auth.php';

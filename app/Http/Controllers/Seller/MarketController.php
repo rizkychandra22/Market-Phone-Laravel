@@ -12,4 +12,9 @@ class MarketController extends Controller
     {
         return Inertia::render('Seller/Market/Index');
     }
+
+    public function create()
+    {
+        return Inertia::render('Seller/Market/Create');
+    }   
 }
