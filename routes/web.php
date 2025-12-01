@@ -37,9 +37,9 @@ Route::get('/', function () {
 Route::middleware(['role.redirect:Super Admin'])
     ->prefix('dashboard')->name('root.')->group(function () {
         Route::get('/root', [DashboardSuperAdmin::class, 'index'])->name('dashboard');
-        Route::get('/users/sellers', [UserController::class, 'indexSeller'])->name('users.sellers');
+        Route::get('/root/users/sellers', [UserController::class, 'indexSeller'])->name('users.sellers');
         Route::get('/users/sellers/data', [UserController::class, 'dataSeller'])->name('users.sellers.data');
-        Route::get('/users/customers', [UserController::class, 'indexCustomer'])->name('users.customers');
+        Route::get('/root/users/customers', [UserController::class, 'indexCustomer'])->name('users.customers');
         Route::get('/users/customers/data', [UserController::class, 'dataCustomer'])->name('users.customers.data');
     });
 

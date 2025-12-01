@@ -9,6 +9,8 @@ import 'datatables.net-responsive';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import 'datatables.net-responsive-dt/css/responsive.dataTables.css';
 
+const sa = 'Super'
+
 let table = null;
 
 onMounted(() => {
@@ -66,7 +68,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <Head title="Data Seller" />
+    <Head :title="`Dashboard ${sa} — Data Seller`" />
 
     <AuthenticatedLayout>
         <template #header>

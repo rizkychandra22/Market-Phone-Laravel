@@ -4,14 +4,15 @@ import { Head, usePage } from '@inertiajs/vue3';
 
 const page = usePage();
 const user = page.props.auth?.user ?? null;
+const role = user?.roles ?? null;
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head :title="`Home — Dashboard ${role}`" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 py-0.5">
                 Dashboard
             </h2>
         </template>

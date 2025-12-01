@@ -11,7 +11,7 @@ class brand extends Model
     use HasFactory, Notifiable;
     
     protected $fillable = [
-        'name'
+        'name', 'logo_brand'
     ];
     
     public function products()
