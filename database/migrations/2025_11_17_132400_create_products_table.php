@@ -22,6 +22,13 @@ return new class extends Migration
             $table->unsignedInteger('stock')->default(0);
             $table->decimal('price', 15, 2);
             $table->enum('status', ['ready', 'sold out'])->default('ready');
+            $table->string('processor');
+            $table->string('memori');
+            $table->string('display');
+            $table->string('camera');
+            $table->string('baterai');
+            $table->string('software');
+            $table->string('konektivitas');
             $table->timestamps();
         });
     }

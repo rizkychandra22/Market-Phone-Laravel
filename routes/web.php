@@ -7,6 +7,7 @@ use App\Http\Controllers\Customer\DashboardController as DashboardCustomer;
 use App\Http\Controllers\Root\UserController;
 use App\Http\Controllers\Seller\MarketController;
 use App\Http\Controllers\Seller\ProductController;
+use App\Http\Controllers\Seller\BrandController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -49,6 +50,8 @@ Route::middleware(['role.redirect:Seller'])
         Route::get('/seller', [DashboardSeller::class, 'index'])->name('dashboard');
         Route::get('/seller/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/seller/products/create', [ProductController::class, 'create'])->name('products.create');
+        Route::post('/seller/brands/store', [ProductController::class, 'brandStore'])->name('brands.store');
+        Route::post('/seller/products/store', [ProductController::class, 'productStore'])->name('products.store');
         Route::get('/seller/market', [MarketController::class, 'index'])->name('market.index');
         Route::get('/seller/market/create', [MarketController::class, 'create'])->name('market.create');
     });
