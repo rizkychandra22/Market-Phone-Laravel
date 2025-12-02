@@ -9,33 +9,15 @@ const role = user?.roles ?? null
 const brands = page.props.brands ?? []
 
 // brand form
-const brandForm = reactive({ name: '', logo_brand: null, user_id: user?.id || null })
+const brandForm = reactive({ 
+    name: '', 
+    logo_brand: null, 
+})
 const logoPreview = ref(null)
 const isLoadingBrand = ref(false)
 const brandErrors = reactive({})
 
-// product form
-const productForm = reactive({
-    user_id: user?.id || null,
-    brand_id: '',
-    name: '',
-    slug: '',
-    description: '',
-    image_product: null,
-    price: '',
-    processor: '',
-    memori: '',
-    display: '',
-    camera: '',
-    baterai: '',
-    software: '',
-    konektivitas: '',
-    stock: '',
-})
-const imgProductView = ref(null)
-const isLoadingImgProduct = ref(false)
-const productErrors = reactive({})
-
+// brand handlers
 function handleLogoChange(e) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -45,6 +27,7 @@ function handleLogoChange(e) {
     reader.readAsDataURL(file)
 }
 
+// brand submit
 function submitBrand() {
     isLoadingBrand.value = true
     brandErrors.name = null
@@ -53,12 +36,10 @@ function submitBrand() {
     const fd = new FormData()
     fd.append('name', brandForm.name)
     if (brandForm.logo_brand) fd.append('logo_brand', brandForm.logo_brand)
-    // send user_id only if backend supports it; harmless otherwise
     if (brandForm.user_id) fd.append('user_id', brandForm.user_id)
 
     router.post(route('seller.brands.store'), fd, {
         onSuccess: (page) => {
-            // try to update client-side list if server returns new brand in props
             const newBrand = page.props?.flash?.brand ?? null
             if (newBrand) brands.unshift(newBrand)
             brandForm.name = ''
@@ -73,51 +54,38 @@ function submitBrand() {
     })
 }
 
-function handleImgProduct(e) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    productForm.image_product = file
-    const reader = new FileReader()
-    reader.onload = (ev) => (imgProductView.value = ev.target.result)
-    reader.readAsDataURL(file)
-}
+// product form
+const productForm = reactive({
+    user_id: user?.id || null,
+    brand_id: '',
+    name: '',
+    description: '',
+    chipset: '',
+    software: '',
+    display: '',
+    dimensi: '',
+    camera: '',
+    baterai: '',
+    network: '',
+    konektivitas: '',
+})
+const productErrors = reactive({})
+const isLoading = ref(false)
 
+// submit product
 function submitProduct() {
-    isLoadingImgProduct.value = true
-    Object.keys(productErrors).forEach((k) => (productErrors[k] = null))
-
-    const fd = new FormData()
-    fd.append('user_id', productForm.user_id)
-    fd.append('brand_id', productForm.brand_id)
-    fd.append('name', productForm.name)
-    fd.append('slug', productForm.slug)
-    fd.append('description', productForm.description)
-    fd.append('price', productForm.price)
-    fd.append('stock', productForm.stock)
-    fd.append('processor', productForm.processor)
-    fd.append('memori', productForm.memori)
-    fd.append('display', productForm.display)
-    fd.append('camera', productForm.camera)
-    fd.append('baterai', productForm.baterai)
-    fd.append('software', productForm.software)
-    fd.append('konektivitas', productForm.konektivitas)
-    if (productForm.image_product) fd.append('image_product', productForm.image_product)
-
-    router.post(route('seller.products.store'), fd, {
+    isLoading.value = true
+    router.post(route('seller.products.store'), productForm, {
         onSuccess: () => {
-            // reset
-            Object.keys(productForm).forEach((k) => {
-                if (k === 'user_id' || k === 'brand_id') return
-                productForm[k] = k === 'image_product' ? null : ''
+            Object.keys(productForm).forEach((key) => {
+                if (key !== 'user_id') productForm[key] = ''
             })
-            productForm.brand_id = ''
-            imgProductView.value = null
-            isLoadingImgProduct.value = false
+            isLoading.value = false
         },
         onError: (err) => {
-            Object.assign(productErrors, err || {})
-            isLoadingImgProduct.value = false
-        },
+            Object.assign(productErrors, err)
+            isLoading.value = false
+        }
     })
 }
 </script>
@@ -142,24 +110,31 @@ function submitProduct() {
                     <div class="p-6 text-gray-900">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                            <!-- Brand column -->
+                            <!-- Column Row Brand -->
                             <form @submit.prevent="submitBrand" class="bg-gray-100 shadow-sm border rounded-lg p-6 md:col-span-1">
                                 <h3 class="text-lg text-center font-semibold mb-4">Tambah Brand</h3>
                                 <div class="grid gap-3">
+                                    <!-- Form Nama Brand -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Nama Brand</label>
-                                        <input v-model="brandForm.name" type="text" name="name" class="border rounded-md p-2 text-sm w-full" placeholder="Nama Brand" :class="{ 'border-red-500': brandErrors.name }" />
+                                        <input v-model="brandForm.name" type="text" name="name" 
+                                            class="border rounded-md p-2 text-sm w-full" 
+                                            :class="{ 'border-red-500': brandErrors.name }" />
                                         <p v-if="brandErrors.name" class="text-red-500 text-xs mt-1">{{ brandErrors.name }}</p>
                                     </div>
+                                    <!-- Form Logo Brand -->
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Logo Brand</label>
-                                        <input @change="handleLogoChange" type="file" name="logo_brand" accept="image/*" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': brandErrors.logo_brand }" />
+                                        <input @change="handleLogoChange" type="file" name="logo_brand" accept="image/*" 
+                                            class="border rounded-md p-2 text-sm w-full" 
+                                            :class="{ 'border-red-500': brandErrors.logo_brand }" />
                                         <p v-if="brandErrors.logo_brand" class="text-red-500 text-xs mt-1">{{ brandErrors.logo_brand }}</p>
                                     </div>
                                     <div v-if="logoPreview" class="flex justify-center">
-                                        <img :src="logoPreview" alt="Logo Preview" class="h-24 w-24 object-cover rounded-md border-2 border-blue-300" />
+                                        <img :src="logoPreview" alt="Logo Preview" class="mt-2 h-24 w-24 object-cover rounded-md border-2 border-blue-300" />
                                     </div>
-                                    <button type="submit" :disabled="isLoadingBrand" class="flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                    <button type="submit" :disabled="isLoadingBrand" 
+                                        class="flex items-center justify-center gap-2 px-3 py-2 mt-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
                                         <i class="fas fa-save"></i>
                                         <span>{{ isLoadingBrand ? 'Menyimpan...' : 'Simpan Brand' }}</span>
                                     </button>
@@ -167,14 +142,14 @@ function submitProduct() {
                                     <!-- Brand list -->
                                     <div class="mt-4">
                                         <h3 class="text-lg font-semibold mb-3 text-gray-800">Daftar Brand</h3>
-                                        <div v-if="brands.length > 0" class="max-h-96 overflow-y-auto border rounded-lg p-3 bg-white">
-                                            <div class="grid grid-cols-2 gap-4">
+                                        <div v-if="brands.length > 0" class="max-h-100 overflow-y-auto border rounded-lg p-3 bg-white">
+                                            <div class="grid grid-cols-2 gap-3">
                                                 <div v-for="b in brands" :key="b.id" class="flex flex-col items-center p-4 border rounded-lg shadow-sm hover:shadow-md transition">
                                                     <div v-if="b.logo_brand" class="mb-2 flex items-center justify-center">
-                                                        <img :src="`/storage/brands/${b.logo_brand}`" :alt="b.name" class="h-32 w-32 object-cover rounded-md" />
+                                                        <img :src="`/storage/brands/${b.logo_brand}`" :alt="b.name" class="h-30 w-30 object-cover rounded-md" />
                                                     </div>
                                                     <div v-else class="mb-2">
-                                                        <div class="h-32 w-32 bg-gray-200 rounded-md flex items-center justify-center">
+                                                        <div class="h-30 w-30 bg-gray-200 rounded-md flex items-center justify-center">
                                                             <i class="fas fa-image text-gray-400 text-2xl"></i>
                                                         </div>
                                                     </div>
@@ -189,112 +164,109 @@ function submitProduct() {
                                 </div>
                             </form>
 
-                            <!-- Product column -->
-                            <form @submit.prevent="submitProduct" class="bg-gray-100 shadow-sm border rounded-lg p-6 md:col-span-2">
-                                <h3 class="text-lg text-center font-semibold mb-4">Tambah Produk & Spesifikasi</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div class="grid gap-3">
-                                        <input type="hidden" name="user_id" :value="productForm.user_id" />
-
-                                        <div>
-                                            <label>Brand Produk</label>
-                                            <select v-model="productForm.brand_id" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.brand_id }">
-                                                <option disabled value="">Pilih Brand</option>
-                                                <option v-for="b in brands" :key="b.id" :value="b.id">{{ b.name }}</option>
-                                            </select>
-                                            <p v-if="productErrors.brand_id" class="text-red-500 text-xs mt-1">{{ productErrors.brand_id }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Nama Produk</label>
-                                            <input v-model="productForm.name" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.name }" />
-                                            <p v-if="productErrors.name" class="text-red-500 text-xs mt-1">{{ productErrors.name }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Slug</label>
-                                            <input v-model="productForm.slug" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.slug }" />
-                                            <p v-if="productErrors.slug" class="text-red-500 text-xs mt-1">{{ productErrors.slug }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Deskripsi Produk</label>
-                                            <textarea v-model="productForm.description" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.description }"></textarea>
-                                            <p v-if="productErrors.description" class="text-red-500 text-xs mt-1">{{ productErrors.description }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Harga</label>
-                                            <input v-model="productForm.price" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.price }" />
-                                            <p v-if="productErrors.price" class="text-red-500 text-xs mt-1">{{ productErrors.price }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Stok</label>
-                                            <input v-model="productForm.stock" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.stock }" />
-                                            <p v-if="productErrors.stock" class="text-red-500 text-xs mt-1">{{ productErrors.stock }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Gambar Produk</label>
-                                            <input @change="handleImgProduct" type="file" accept="image/*" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.image_product }" />
-                                            <p v-if="productErrors.image_product" class="text-red-500 text-xs mt-1">{{ productErrors.image_product }}</p>
-                                        </div>
-
-                                        <div v-if="imgProductView" class="flex justify-center">
-                                            <img :src="imgProductView" alt="Product Preview" class="h-24 w-24 object-cover rounded-md border-2 border-blue-300" />
-                                        </div>
+                            <!-- Column Row Product -->
+                            <form @submit.prevent="submitProduct" class="bg-gray-100 shadow-sm border rounded-lg p-6 md:col-span-1">
+                                <h3 class="text-lg text-center font-semibold mb-4">Tambah Produk</h3>
+                                <div class="grid gap-3">
+                                    <input type="hidden" name="user_id" :value="productForm.user_id" />
+                                    <!-- Brand Produk -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Brand Produk</label>
+                                        <select v-model="productForm.brand_id"
+                                            class="border rounded-md p-2 text-sm w-full"
+                                            :class="{ 'border-red-500': productErrors.brand_id }">
+                                            <option disabled value="">Pilih Brand</option>
+                                            <option v-for="b in brands" :key="b.id" :value="b.id">{{ b.name }}</option>
+                                        </select>
+                                        <p v-if="productErrors.brand_id" class="text-red-500 text-xs mt-1">{{ productErrors.brand_id }}</p>
+                                    </div>
+                                    <!-- Nama Produk -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Produk</label>
+                                        <input v-model="productForm.name" type="text"
+                                            class="border rounded-md p-2 text-sm w-full"
+                                            :class="{ 'border-red-500': productErrors.name }" />
+                                        <p v-if="productErrors.name" class="text-red-500 text-xs mt-1">{{ productErrors.name }}</p>
+                                    </div>
+                                    <!-- Chipset -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Chipset</label>
+                                        <input v-model="productForm.chipset" type="text"
+                                            class="border rounded-md p-2 text-sm w-full"
+                                            :class="{ 'border-red-500': productErrors.chipset }" />
+                                        <p v-if="productErrors.chipset" class="text-red-500 text-xs mt-1">{{ productErrors.chipset }}</p>
+                                    </div>
+                                    <!-- Deskripsi -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi Produk</label>
+                                        <textarea v-model="productForm.description"
+                                            class="border rounded-md p-2 text-sm w-full"
+                                            :class="{ 'border-red-500': productErrors.description }"></textarea>
+                                        <p v-if="productErrors.description" class="text-red-500 text-xs mt-1">{{ productErrors.description }}</p>
+                                    </div>
+                                    <!-- Software -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Software</label>
+                                        <textarea v-model="productForm.software" type="text"
+                                            class="border rounded-md p-2 text-sm w-full"
+                                            :class="{ 'border-red-500': productErrors.software }"></textarea>
+                                        <p v-if="productErrors.software" class="text-red-500 text-xs mt-1">{{ productErrors.software }}</p>
+                                    </div>
+                                    <!-- Display -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Display</label>
+                                        <textarea v-model="productForm.display" type="text"
+                                            class="border rounded-md p-2 text-sm w-full"
+                                            :class="{ 'border-red-500': productErrors.display }"></textarea>
+                                        <p v-if="productErrors.display" class="text-red-500 text-xs mt-1">{{ productErrors.display }}</p>
+                                    </div>
+                                    <!-- Dimensi -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Dimensi</label>
+                                        <textarea v-model="productForm.dimensi" type="text"
+                                            class="border rounded-md p-2 text-sm w-full"
+                                            :class="{ 'border-red-500': productErrors.dimensi }"></textarea>
+                                        <p v-if="productErrors.dimensi" class="text-red-500 text-xs mt-1">{{ productErrors.dimensi }}</p>
+                                    </div>
+                                    <!-- Kamera -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Kamera</label>
+                                        <textarea v-model="productForm.camera" type="text"
+                                            class="border rounded-md p-2 text-sm w-full"
+                                            :class="{ 'border-red-500': productErrors.camera }"></textarea>
+                                        <p v-if="productErrors.camera" class="text-red-500 text-xs mt-1">{{ productErrors.camera }}</p>
+                                    </div>
+                                    <!-- Network -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Network</label>
+                                        <textarea v-model="productForm.network" type="text"
+                                        class="border rounded-md p-2 text-sm w-full"
+                                        :class="{ 'border-red-500': productErrors.network }"></textarea>
+                                        <p v-if="productErrors.network" class="text-red-500 text-xs mt-1">{{ productErrors.network }}</p>
+                                    </div>
+                                    <!-- Konektivitas -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Konektivitas</label>
+                                        <textarea v-model="productForm.konektivitas" type="text"
+                                        class="border rounded-md p-2 text-sm w-full"
+                                        :class="{ 'border-red-500': productErrors.konektivitas }"></textarea>
+                                        <p v-if="productErrors.konektivitas" class="text-red-500 text-xs mt-1">{{ productErrors.konektivitas }}</p>
+                                    </div>
+                                    <!-- Baterai -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Baterai</label>
+                                        <input v-model="productForm.baterai" type="text"
+                                            class="border rounded-md p-2 text-sm w-full"
+                                            :class="{ 'border-red-500': productErrors.baterai }" />
+                                        <p v-if="productErrors.baterai" class="text-red-500 text-xs mt-1">{{ productErrors.baterai }}</p>
                                     </div>
 
-                                    <div class="grid gap-3">
-                                        <div>
-                                            <label>Processor</label>
-                                            <input v-model="productForm.processor" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.processor }" />
-                                            <p v-if="productErrors.processor" class="text-red-500 text-xs mt-1">{{ productErrors.processor }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Memori</label>
-                                            <input v-model="productForm.memori" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.memori }" />
-                                            <p v-if="productErrors.memori" class="text-red-500 text-xs mt-1">{{ productErrors.memori }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Display</label>
-                                            <input v-model="productForm.display" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.display }" />
-                                            <p v-if="productErrors.display" class="text-red-500 text-xs mt-1">{{ productErrors.display }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Kamera</label>
-                                            <input v-model="productForm.camera" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.camera }" />
-                                            <p v-if="productErrors.camera" class="text-red-500 text-xs mt-1">{{ productErrors.camera }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Baterai</label>
-                                            <input v-model="productForm.baterai" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.baterai }" />
-                                            <p v-if="productErrors.baterai" class="text-red-500 text-xs mt-1">{{ productErrors.baterai }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Software</label>
-                                            <input v-model="productForm.software" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.software }" />
-                                            <p v-if="productErrors.software" class="text-red-500 text-xs mt-1">{{ productErrors.software }}</p>
-                                        </div>
-
-                                        <div>
-                                            <label>Konektivitas</label>
-                                            <input v-model="productForm.konektivitas" type="text" class="border rounded-md p-2 text-sm w-full" :class="{ 'border-red-500': productErrors.konektivitas }" />
-                                            <p v-if="productErrors.konektivitas" class="text-red-500 text-xs mt-1">{{ productErrors.konektivitas }}</p>
-                                        </div>
-                                    </div>
+                                    <button type="submit" :disabled="isLoading"
+                                        class="gap-1 px-2 py-2 bg-blue-600 mt-2 text-white text-sm rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                        <i class="fas fa-save"></i>
+                                        <span>{{ isLoading ? 'Menyimpan...' : 'Simpan Spesifikasi' }}</span>
+                                    </button>
                                 </div>
-
-                                <button type="submit" :disabled="isLoadingImgProduct" class="gap-1 px-2 py-2 bg-blue-600 mt-5 w-full text-white text-sm rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                    <i class="fas fa-save"></i>
-                                    <span>{{ isLoadingImgProduct ? 'Menyimpan...' : 'Simpan Spesifikasi' }}</span>
-                                </button>
                             </form>
                         </div>
 

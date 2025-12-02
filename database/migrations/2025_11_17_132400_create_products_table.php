@@ -15,19 +15,17 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('brand_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->text('description');
-            $table->string('image_product');
-            $table->unsignedInteger('stock')->default(0);
-            $table->decimal('price', 15, 2);
-            $table->enum('status', ['ready', 'sold out'])->default('ready');
-            $table->string('processor');
-            $table->string('memori');
+            $table->string('name'); 
+            $table->text('description')->nullable();
+
+            // Spesifikasi umum (tidak berubah per varian)
+            $table->string('chipset');
+            $table->string('software');
             $table->string('display');
+            $table->string('dimensi');
             $table->string('camera');
             $table->string('baterai');
-            $table->string('software');
+            $table->string('network'); 
             $table->string('konektivitas');
             $table->timestamps();
         });

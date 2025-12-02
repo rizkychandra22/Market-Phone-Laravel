@@ -19,7 +19,7 @@ const role = user?.roles ?? null;
 
                 <Link
                     :href="route('seller.market.create')"
-                    class="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700">
+                    class="inline-flex items-center gap-1 px-2 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700">
                     <i class="fas fa-plus-circle"></i>
                     <span>Tambah</span>
                 </Link>

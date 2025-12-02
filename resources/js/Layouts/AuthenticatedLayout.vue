@@ -30,21 +30,9 @@ const isCustomer = roles.includes("Customer");
                     <div class="flex h-16 justify-between">
                         <div class="flex">
                             <!-- Logo -->
-                            <div v-if="isSeller"
+                            <div
                                 class="flex shrink-0 items-center">
-                                <Link :href="route('seller.dashboard')">
-                                    <ApplicationLogo class="block h-9 w-auto fill-current text-gray-800"/>
-                                </Link>
-                            </div>
-                            <div v-else-if="isCustomer" 
-                                class="flex shrink-0 items-center">
-                                <Link :href="route('root.dashboard')">
-                                    <ApplicationLogo class="block h-9 w-auto fill-current text-gray-800"/>
-                                </Link>
-                            </div>
-                            <div v-else 
-                                class="flex shrink-0 items-center">
-                                <Link :href="route('root.dashboard')">
+                                <Link>
                                     <ApplicationLogo class="block h-9 w-auto fill-current text-gray-800"/>
                                 </Link>
                             </div>
