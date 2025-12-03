@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Seller;
 use App\Http\Controllers\Controller;
 use App\Models\brand;
 use App\Models\product;
+use App\Models\productImage;
+use App\Models\productVariant;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +22,8 @@ class ProductController extends Controller
     public function create()
     {
         $brands = brand::all();
-        return Inertia::render('Seller/Product/Create', compact('brands'));
+        $products = product::all();
+        return Inertia::render('Seller/Product/Create', compact('brands', 'products'));
     }
 
     public function brandStore(Request $request)
@@ -80,17 +83,45 @@ class ProductController extends Controller
         return redirect()->route('seller.products.create')
                         ->with('success', 'Product created successfully');
     }
+
+    public function varianStore(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'color' => 'required|string|max:255',
+            'memori' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // Simpan variant
+        $variant = productVariant::create([
+            'product_id' => $validated['product_id'],
+            'color' => $validated['color'],
+            'memori' => $validated['memori'],
+            'price' => $validated['price'],
+            'stock' => $validated['stock'],
+        ]);
+
+        // Simpan gambar (multiple)
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $img) {
+
+                $filename = 'prod_' . time() . '_' . $index . '.' . $img->getClientOriginalExtension();
+                $img->storeAs('products', $filename, 'public');
+
+                productImage::create([
+                    'product_id' => $validated['product_id'],
+                    'image' => $filename,
+                    'is_primary' => $index === 0
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => 'Varian produk berhasil ditambahkan',
+            'variant' => $variant
+        ], 201);
+    }
 }
-
-// if ($request->hasFile('image_product')) {
-            
-//             $file = $request->file('image_product');
-//             $filename = preg_replace('/\s+/', '_', strtolower($request->name)) 
-//                         . '_' 
-//                         . now()->format('Ymd_His') 
-//                         . '.' 
-//                         . $file->getClientOriginalExtension();
-
-//             // simpan ke storage
-//             $file->storeAs('products', $filename, 'public');
-//         }

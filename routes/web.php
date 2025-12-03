@@ -52,6 +52,7 @@ Route::middleware(['role.redirect:Seller'])
         Route::get('/seller/products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('/seller/brands/store', [ProductController::class, 'brandStore'])->name('brands.store');
         Route::post('/seller/products/store', [ProductController::class, 'productStore'])->name('products.store');
+        Route::post('/seller/variant/store', [ProductController::class, 'varianStore'])->name('variants.store');
         Route::get('/seller/market', [MarketController::class, 'index'])->name('market.index');
         Route::get('/seller/market/create', [MarketController::class, 'create'])->name('market.create');
     });
