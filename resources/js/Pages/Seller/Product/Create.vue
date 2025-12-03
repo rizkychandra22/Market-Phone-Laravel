@@ -2,11 +2,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import { Head, usePage, Link, router } from '@inertiajs/vue3'
 import { ref, reactive } from 'vue'
+import axios from 'axios' // ...existing code...
 
 const page = usePage()
 const user = page.props.auth?.user ?? null
 const role = user?.roles ?? null
-const brands = page.props.brands ?? []
+const brands = ref(page.props.brands ?? [])
 
 // brand form
 const brandForm = reactive({ 
@@ -28,7 +29,7 @@ function handleLogoChange(e) {
 }
 
 // brand submit
-function submitBrand() {
+async function submitBrand() {
     isLoadingBrand.value = true
     brandErrors.name = null
     brandErrors.logo_brand = null
@@ -38,20 +39,39 @@ function submitBrand() {
     if (brandForm.logo_brand) fd.append('logo_brand', brandForm.logo_brand)
     if (brandForm.user_id) fd.append('user_id', brandForm.user_id)
 
-    router.post(route('seller.brands.store'), fd, {
-        onSuccess: (page) => {
-            const newBrand = page.props?.flash?.brand ?? null
-            if (newBrand) brands.unshift(newBrand)
+    try {
+        const res = await axios.post(route('seller.brands.store'), fd, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        })
+
+        if (res.status === 201 || res.status === 200) {
+            const newBrand = res.data.brand ?? null
+
+            if (newBrand) {
+                if (!newBrand.logo_brand && res.data.logo_url) {
+                    newBrand.logo_brand = res.data.logo_url.split('/').pop()
+                }
+                // add to top of list so langsung tampil di daftar
+                brands.value.unshift(newBrand)
+            }
+
+            // reset form
             brandForm.name = ''
-            brandForm.logo_brand = null
-            logoPreview.value = null
-            isLoadingBrand.value = false
-        },
-        onError: (err) => {
-            Object.assign(brandErrors, err || {})
-            isLoadingBrand.value = false
-        },
-    })
+            brandForm.logo_brand = ''
+            logoPreview.value = ''
+        }
+    } catch (err) {
+        if (err.response && err.response.status === 422) {
+            const errors = err.response.data.errors || {}
+            Object.keys(errors).forEach((k) => {
+                brandErrors[k] = Array.isArray(errors[k]) ? errors[k][0] : errors[k]
+            })
+        } else {
+            brandErrors.name = err.response?.data?.message || 'Terjadi kesalahan'
+        }
+    } finally {
+        isLoadingBrand.value = false
+    }
 }
 
 // product form
@@ -142,7 +162,7 @@ function submitProduct() {
                                     <!-- Brand list -->
                                     <div class="mt-4">
                                         <h3 class="text-lg font-semibold mb-3 text-gray-800">Daftar Brand</h3>
-                                        <div v-if="brands.length > 0" class="max-h-100 overflow-y-auto border rounded-lg p-3 bg-white">
+                                        <div v-if="brands.length > 0" class="max-h-95 overflow-y-auto border rounded-lg p-3 bg-white">
                                             <div class="grid grid-cols-2 gap-3">
                                                 <div v-for="b in brands" :key="b.id" class="flex flex-col items-center p-4 border rounded-lg shadow-sm hover:shadow-md transition">
                                                     <div v-if="b.logo_brand" class="mb-2 flex items-center justify-center">

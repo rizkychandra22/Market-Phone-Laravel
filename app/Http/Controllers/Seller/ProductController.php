@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\brand;
 use App\Models\product;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -43,10 +45,15 @@ class ProductController extends Controller
             $validated['logo_brand'] = $filename;
         }
 
-        brand::create($validated);
+        $brand = brand::create($validated);
 
-        return redirect()->route('seller.products.create')
-                        ->with('success', 'Brand created successfully');
+        $logoUrl = $brand->logo_brand ? Storage::url('brands/' . $brand->logo_brand) : null;
+
+        return response()->json([
+            'success' => 'Brand created successfully',
+            'brand' => $brand,
+            'logo_url' => $logoUrl,
+        ], Response::HTTP_CREATED);
     }
 
     public function productStore(Request $request)

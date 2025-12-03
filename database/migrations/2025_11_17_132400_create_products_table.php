@@ -20,13 +20,13 @@ return new class extends Migration
 
             // Spesifikasi umum (tidak berubah per varian)
             $table->string('chipset');
-            $table->string('software');
-            $table->string('display');
-            $table->string('dimensi');
-            $table->string('camera');
             $table->string('baterai');
-            $table->string('network'); 
-            $table->string('konektivitas');
+            $table->text('software');
+            $table->text('camera');
+            $table->text('display');
+            $table->text('dimensi');
+            $table->text('network'); 
+            $table->text('konektivitas');
             $table->timestamps();
         });
     }
