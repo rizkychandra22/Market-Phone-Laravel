@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Seller;
 
 use App\Http\Controllers\Controller;
-use App\Models\brand;
-use App\Models\product;
-use App\Models\productImage;
-use App\Models\productVariant;
+use App\Models\Brand;
+use App\Models\Product;
+use App\Models\ProductImage;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
@@ -19,10 +19,11 @@ class ProductController extends Controller
         return Inertia::render('Seller/Product/Index');
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $brands = brand::all();
-        $products = product::all();
+        $brands = Brand::all();
+        // Include brand and images so the UI can show logos and product images
+        $products = Product::with(['brand', 'images'])->get();
         return Inertia::render('Seller/Product/Create', compact('brands', 'products'));
     }
 
@@ -48,7 +49,7 @@ class ProductController extends Controller
             $validated['logo_brand'] = $filename;
         }
 
-        $brand = brand::create($validated);
+        $brand = Brand::create($validated);
 
         $logoUrl = $brand->logo_brand ? Storage::url('brands/' . $brand->logo_brand) : null;
 
@@ -78,7 +79,7 @@ class ProductController extends Controller
         $data = $request->all();
         $data['user_id'] = auth()->user()->id;
 
-        product::create($data);
+        Product::create($data);
 
         return redirect()->route('seller.products.create')
                         ->with('success', 'Product created successfully');
@@ -96,7 +97,7 @@ class ProductController extends Controller
         ]);
 
         // Simpan variant
-        $variant = productVariant::create([
+        $variant = ProductVariant::create([
             'product_id' => $validated['product_id'],
             'color' => $validated['color'],
             'memori' => $validated['memori'],
@@ -111,7 +112,7 @@ class ProductController extends Controller
                 $filename = 'prod_' . time() . '_' . $index . '.' . $img->getClientOriginalExtension();
                 $img->storeAs('products', $filename, 'public');
 
-                productImage::create([
+                ProductImage::create([
                     'product_id' => $validated['product_id'],
                     'image' => $filename,
                     'is_primary' => $index === 0

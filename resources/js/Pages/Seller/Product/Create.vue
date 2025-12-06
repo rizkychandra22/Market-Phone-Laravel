@@ -3,12 +3,97 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import { Head, usePage, Link, router } from '@inertiajs/vue3'
 import { ref, reactive } from 'vue'
 import axios from 'axios'
+import { onMounted } from 'vue'
+import EasyDataTable from 'vue3-easy-data-table'
+import 'vue3-easy-data-table/dist/style.css'
 
 const page = usePage()
 const user = page.props.auth?.user ?? null
 const role = user?.roles ?? null
 const brands = ref(page.props.brands ?? [])
 const products = ref(page.props.products ?? [])
+const variants = ref([])
+
+// Fetch variants function
+async function fetchVariants() {
+    try {
+        const res = await axios.get(route('seller.variants.index'))
+        variants.value = res.data.variants || []
+    } catch (err) {
+        console.error('Error fetching variants:', err)
+    }
+}
+
+// Call fetch variants on mount
+onMounted(() => {
+    fetchVariants()
+})
+
+// Products Table Headers
+const productHeaders = [
+    { text: 'ID', value: 'id', width: 50 },
+    { text: 'Logo Brand', value: 'brand_logo', width: 100 },
+    { text: 'Gambar Produk', value: 'product_image', width: 100 },
+    { text: 'Brand', value: 'brand.name' },
+    { text: 'Produk', value: 'name' },
+    { text: 'Chipset', value: 'chipset' },
+    // { text: 'Software', value: 'software' },
+    // { text: 'Display', value: 'display' },
+    // { text: 'Dimensi', value: 'dimensi' },
+    // { text: 'Kamera', value: 'camera' },
+    // { text: 'Network', value: 'network' },
+    // { text: 'Konektivitas', value: 'konektivitas' },
+    { text: 'Baterai', value: 'baterai' },
+    { text: 'Deskripsi', value: 'description' },
+    { text: 'Aksi', value: 'actions' },
+]
+
+// Variants Table Headers
+const variantHeaders = [
+    { text: 'ID', value: 'id', width: 50 },
+    { text: 'Produk', value: 'product.name' },
+    { text: 'Warna', value: 'color' },
+    { text: 'Penyimpanan', value: 'memori' },
+    { text: 'Harga', value: 'price' },
+    { text: 'Stok', value: 'stock' },
+    { text: 'Gambar', value: 'images_count' },
+    { text: 'Aksi', value: 'actions' },
+]
+
+// Delete product
+async function deleteProduct(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+        try {
+            await axios.delete(route('seller.products.destroy', id))
+            products.value = products.value.filter(p => p.id !== id)
+            alert('Produk berhasil dihapus')
+        } catch (err) {
+            alert('Gagal menghapus produk')
+        }
+    }
+}
+
+// Delete variant
+async function deleteVariant(id) {
+    if (confirm('Apakah Anda yakin ingin menghapus varian ini?')) {
+        try {
+            await axios.delete(route('seller.variants.destroy', id))
+            variants.value = variants.value.filter(v => v.id !== id)
+            alert('Varian berhasil dihapus')
+        } catch (err) {
+            alert('Gagal menghapus varian')
+        }
+    }
+}
+
+// Format price
+function formatPrice(price) {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+    }).format(price)
+}
+
 
 // brand form
 const brandForm = reactive({ 
@@ -103,34 +188,41 @@ const productErrors = reactive({})
 const productSuccessMessage = ref('')
 const isLoading = ref(false)
 
-// submit product
-function submitProduct() {
+// submit product (use axios + route)
+async function submitProduct() {
     isLoading.value = true
     Object.keys(productErrors).forEach(k => delete productErrors[k])
     productSuccessMessage.value = ''
 
-    router.post(route('seller.products.store'), productForm, {
-        onSuccess: () => {
-            productSuccessMessage.value = 'Produk berhasil ditambahkan!'
-            
+    try {
+        const res = await axios.post(route('seller.products.store'), productForm)
+
+        if (res.status === 200 || res.status === 201) {
+            productSuccessMessage.value = res.data.success || 'Produk berhasil ditambahkan!'
+
             Object.keys(productForm).forEach((key) => {
                 if (key !== 'user_id') productForm[key] = ''
             })
+
+            // reload products list from server (Inertia)
             router.reload({ only: ['products'] })
 
-            // hide success message after 3 seconds
             setTimeout(() => {
                 productSuccessMessage.value = ''
             }, 5000)
-            
-            isLoading.value = false
-        },
-        onError: (err) => {
-            Object.assign(productErrors, err)
-            productErrors.general = 'Terjadi kesalahan saat menyimpan produk'
-            isLoading.value = false
         }
-    })
+    } catch (err) {
+        if (err.response?.status === 422) {
+            const errors = err.response.data.errors || {}
+            Object.keys(errors).forEach((k) => {
+                productErrors[k] = Array.isArray(errors[k]) ? errors[k][0] : errors[k]
+            })
+        } else {
+            productErrors.general = err.response?.data?.message || 'Terjadi kesalahan saat menyimpan produk'
+        }
+    } finally {
+        isLoading.value = false
+    }
 }
 
 // variant form

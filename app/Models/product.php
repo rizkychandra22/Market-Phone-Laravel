@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class product extends Model
+class Product extends Model
 {
     protected $fillable = [
         'user_id',
@@ -23,16 +23,16 @@ class product extends Model
 
     public function brand()
     {
-        return $this->belongsTo(\App\Models\brand::class);
+        return $this->belongsTo(\App\Models\Brand::class);
     }
 
     public function variants()
     {
-        return $this->hasMany(productVariant::class);
+        return $this->hasMany(ProductVariant::class);
     }
 
     public function images()
     {
-        return $this->hasMany(productImage::class);
+        return $this->hasMany(ProductImage::class);
     }
 }

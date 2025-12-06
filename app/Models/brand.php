@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class brand extends Model
+class Brand extends Model
 {
     use HasFactory, Notifiable;
     
@@ -16,6 +16,6 @@ class brand extends Model
     
     public function products()
     {
-        return $this->hasMany(\App\Models\product::class);
+        return $this->hasMany(\App\Models\Product::class);
     }
 }
